@@ -1,0 +1,44 @@
+# Maintainer: Taeyeon Mori <orochimarufan.x3@gmail.com>
+pkgname=libdy-git
+_pkgver=0.1.0
+pkgver=0.1.0+70c311d
+pkgrel=1
+
+pkgdesc="A Dynamic Data Exchange library"
+arch=("i686" "x86_64")
+url="https://github.com/Orochimarufan/libdy"
+license=('GPL')
+
+makedepends=(cmake ninja git)
+
+source=(git+https://github.com/Orochimarufan/libdy.git)
+md5sums=(SKIP)
+
+
+pkgver() {
+    cd "$srcdir/libdy"
+    printf "%s+%s" "$_pkgver" "`git rev-parse --short HEAD`"
+}
+
+
+prepare() {
+    cd "$srcdir/libdy"
+}
+
+build() {
+    mkdir -p "$srcdir/build"
+    cd "$srcdir/build"
+
+    cmake ../libdy -G Ninja -DCMAKE_INSTALL_PREFIX=/usr
+    ninja
+}
+
+check() {
+    cd "$srcdir/build"
+}
+
+package() {
+    cd "$srcdir/build"
+    DESTDIR="$pkgdir/" ninja install
+}
+

@@ -1,0 +1,48 @@
+# Maintainer: Taeyeon Mori <orochimarufan.x3@gmail.com>
+pkgname=qt5-qtvlc-git
+_pkgver=0.2.1
+pkgver=0.2.1+42e53ce
+pkgrel=1
+
+pkgdesc="Qt5 libvlc bindings"
+arch=("i686" "x86_64")
+url="https://github.com/Orochimarufan/QtVlc"
+license=('GPL')
+
+makedepends=(cmake ninja git qt5-base qt5-tools vlc)
+
+source=(git+https://github.com/Orochimarufan/QtVlc.git
+        git+https://github.com/videolan/vlc)
+md5sums=(SKIP SKIP)
+
+
+pkgver() {
+    cd "$srcdir/QtVlc"
+    printf "%s+%s" "$_pkgver" "`git rev-parse --short HEAD`"
+}
+
+
+prepare() {
+    cd "$srcdir/QtVlc"
+    git submodule init
+    git config submodule.vlc.url "file://$srcdir/vlc"
+    git submodule update
+}
+
+build() {
+    mkdir -p "$srcdir/build"
+    cd "$srcdir/build"
+
+    cmake ../QtVlc -G Ninja -DCMAKE_INSTALL_PREFIX=/usr
+    ninja
+}
+
+check() {
+    cd "$srcdir/build"
+}
+
+package() {
+    cd "$srcdir/build"
+    DESTDIR="$pkgdir/" ninja install
+}
+

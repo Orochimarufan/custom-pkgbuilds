@@ -1,7 +1,7 @@
 # Maintainer: Taeyeon Mori <orochimarufan.x3@gmail.com>
 pkgname=libdy-git
 _pkgver=0.1.0
-pkgver=0.1.0+70c311d
+pkgver=0.1.0+b88740c
 pkgrel=1
 
 pkgdesc="A Dynamic Data Exchange library"
@@ -9,7 +9,7 @@ arch=("i686" "x86_64")
 url="https://github.com/Orochimarufan/libdy"
 license=('GPL')
 
-makedepends=(cmake ninja git)
+makedepends=(cmake ninja git python) # TODO: split libdy-python
 
 source=(git+https://github.com/Orochimarufan/libdy.git)
 md5sums=(SKIP)

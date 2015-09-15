@@ -1,0 +1,23 @@
+# Maintainer: Taeyeon Mori <orochimarufan.x3@gmail.com>
+
+pkgname=meta-libgudev-systemd
+pkgver=219
+pkgrel=1
+
+arch=(any)
+
+depends=(systemd=219)
+provides=(libgudev)
+
+prepare() {
+    true
+}
+
+build() {
+    true
+}
+
+package() {
+    true
+}
+

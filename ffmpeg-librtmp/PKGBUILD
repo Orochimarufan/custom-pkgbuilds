@@ -9,7 +9,7 @@
 _pkgname=ffmpeg
 pkgname=ffmpeg-librtmp
 pkgver=2.8.1
-pkgrel=2
+pkgrel=3
 epoch=1
 pkgdesc='Complete solution to record, convert and stream audio and video'
 arch=('i686' 'x86_64')
@@ -20,8 +20,8 @@ depends=(
       'libbluray' 'libmodplug' 'libpulse' 'libsoxr' 'libssh' 'libtheora'
       'libva' 'libvdpau' 'libwebp' 'opencore-amr' 'openjpeg' 'opus'
       'schroedinger' 'sdl' 'speex' 'v4l-utils' 'xvidcore' 'zlib'
-      'libvorbis.so' 'libvorbisenc.so' 'libvpx.so' 'libx264.so' 'libx265.so'
-      'rtmpdump'
+      'libvidstab.so' 'libvorbis.so' 'libvorbisenc.so' 'libvpx.so' 'libx264.so'
+      'libx265.so' 'rtmpdump'
 )
 makedepends=('hardening-wrapper' 'ladspa' 'libvdpau' 'yasm')
 optdepends=('ladspa: LADSPA filters')
@@ -68,6 +68,7 @@ build() {
     --enable-libssh \
     --enable-libtheora \
     --enable-libv4l2 \
+    --enable-libvidstab \
     --enable-libvorbis \
     --enable-libvpx \
     --enable-libwebp \

@@ -1,7 +1,7 @@
 # Maintainer: Taeyeon Mori <orochimarufan.x3@gmail.com>
 pkgname=qt5-python3-git
-_pkgver=2.2.0
-pkgver=2.2.0+d13a71d
+_pkgver=2.3.0
+pkgver=2.3.0+b449eae
 pkgrel=1
 
 pkgdesc="PythonQt fork featuring Qt 5.x and Python 3.x support"
@@ -29,7 +29,7 @@ build() {
     mkdir -p "$srcdir/build"
     cd "$srcdir/build"
 
-    cmake ../PythonQt -G Ninja -DCMAKE_INSTALL_PREFIX=/usr -DPythonQt_Qt5=ON -DPythonQt_Python3=ON
+    cmake ../PythonQt -G Ninja -DCMAKE_INSTALL_PREFIX=/usr -DPythonQt_Qt5=ON -DPythonQt_Python3=ON -DBUILD_SHARED_LIBS=ON
     ninja
 }
 

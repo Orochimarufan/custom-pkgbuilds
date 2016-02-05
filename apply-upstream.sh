@@ -142,6 +142,9 @@ for pkg in $pkgs; do
             aur.sh -X $upstream_name
         fi
     else
+        if [ "$upstream_type" = "ABS" ]; then
+            run_in "$ABSDEST" asp update "$upstream_name"
+        fi
         run_in "$upstream_dir" git pull
     fi
 

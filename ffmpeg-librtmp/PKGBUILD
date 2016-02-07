@@ -1,18 +1,17 @@
 #CUSTOMPKG
 # $Id$
-# Maintainer: Maxime Gauduin <alucyd@archlinux.org>
+# Maintainer: Taeyeon Mori <orochimarufan.x3@gmail.com>
+# Maintainer: Maxime Gauduin <alucryd@archlinux.org>
 # Contributor: Bartłomiej Piotrowski <bpiotrowski@archlinux.org>
 # Contributor: Ionut Biru <ibiru@archlinux.org>
 # Contributor: Tom Newsom <Jeepster@gmx.co.uk>
 # Contributor: Paul Mattal <paul@archlinux.org>
 
-conflicts=(ffmpeg)
-
-pkgname=ffmpeg-librtmp
+pkgname=ffmpeg
 pkgver=2.8.6
 pkgrel=2
 epoch=1
-pkgdesc='Complete solution to record, convert and stream audio and video (librtmp version)'
+pkgdesc='Complete solution to record, convert and stream audio and video'
 arch=('i686' 'x86_64')
 url='http://ffmpeg.org/'
 license=('GPL3')
@@ -79,13 +78,20 @@ build() {
 
   make
   make tools/qt-faststart
-  make doc/ff{mpeg,play,server}.0
+  make doc/ff{mpeg,play,server}.1
 }
 
 package() {
   cd ffmpeg-${pkgver}
+
   make DESTDIR="${pkgdir}" install install-man
-  install -Dm755 tools/qt-faststart "${pkgdir}"/usr/bin/qt-faststart
+  install -Dm 755 tools/qt-faststart "${pkgdir}"/usr/bin/
 }
+
+# Put down here to avoid metadata merge conflicts
+pkgname=ffmpeg-librtmp
+pkgdesc="$pkgdesc (librtmp version)"
+conflicts=(ffmpeg)
+provides+=(ffmpeg)
 
 # vim: ts=2 sw=2 et:

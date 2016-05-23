@@ -168,6 +168,7 @@ for pkg in $pkgs; do
             echo "NOTE: Dropping into a embedded shell. Use \`resolved\` or \`abort\` to return."
             echo "NOTE: You can use \`edit\` to edit files in vim. It will automatically show any rejected hunks in an additional buffer."
             echo "NOTE: The edited file will be added to the git index after vim is closed. \`e\` is short for 'edit PKGBUILD'."
+            echo "NOTE: Use \`sum\` to update the checksums. \`fin\` can be used to stage all modifications and commit."
             echo "NOTE: At this time, the prompt doesn't support history or completion :'("
         fi
 
@@ -179,6 +180,9 @@ for pkg in $pkgs; do
                 }
                 abort() {
                     exit 1
+                }
+                skip() {
+                    exit 3
                 }
                 edit() {
                     f=$1
@@ -193,6 +197,14 @@ for pkg in $pkgs; do
                 e() {
                     edit PKGBUILD
                 }
+                sum() {
+                    updpkgsums
+                    git add PKGBUILD
+                }
+                fin() {
+                    git add -u
+                    resolved
+                }
                 while true; do
                     read -p "(AM) $PWD$ " _cmd
                     eval "$_cmd"
@@ -203,8 +215,10 @@ for pkg in $pkgs; do
             if [ $RT -eq 1 ]; then
                 git am --abort
                 break
-            elif [ $RT -eq 2 ]; then
-                git am --continue
+            elif [ $RT -ge 2 ]; then
+                find "$pkg" -name '*.rej' -delete
+                [ $RT -eq 3 ] && what=skip || what=continue
+                git am --$what
                 APPLY_RESULT=$?
             else
                 echo "WARNING: Exit the (AM) prompt with either \`resolved\` or \`abort\`"

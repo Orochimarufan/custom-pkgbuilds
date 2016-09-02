@@ -3,7 +3,7 @@
 
 _pkgbase='decaf-emu'
 pkgname="$_pkgbase-git"
-pkgver=r2210.2d91f54
+pkgver=r2856.ce00304
 pkgrel=1
 pkgdesc="An experimental open-source Nintendo Wii U emulator"
 arch=('x86_64')
@@ -21,8 +21,10 @@ source=("$_pkgbase::git+https://github.com/decaf-emu/decaf-emu"
         'git+https://github.com/decaf-emu/gsl-lite'
         'git+https://github.com/decaf-emu/addrlib'
         'git+https://github.com/exjam/excmd'
+        'git+https://github.com/johnmcfarlane/fixed_point'
         'git+https://github.com/ocornut/imgui')
 md5sums=('SKIP'
+         'SKIP'
          'SKIP'
          'SKIP'
          'SKIP'
@@ -53,6 +55,7 @@ prepare() {
   git config submodule.libraries/gsl-lite.url "$srcdir/gsl-lite"
   git config submodule.libraries/addrlib.url "$srcdir/addrlib"
   git config submodule.libraries/excmd.url "$srcdir/excmd"
+  git config submodule.libraries/fixed_point.url "$srcdir/fixed_point"
   git config submodule.libraries/imgui.url "$srcdir/imgui"
 }
 
@@ -68,6 +71,7 @@ build() {
     libraries/gsl-lite \
     libraries/addrlib \
     libraries/excmd \
+    libraries/fixed_point \
     libraries/imgui
 
   cd build

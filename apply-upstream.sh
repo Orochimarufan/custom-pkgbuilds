@@ -15,7 +15,7 @@ C_PROMPT=33
 
 FMT_PKGNAME="\033[${C_PKGNAM}m%s\033[-MSGCOLOR-m"
 
-_msg() {
+cmsg() {
     colr="$1"
     shift
     fmt="`echo "$1" | sed -e "s/\\[-MSGCOLOR-m/\\[${colr}m/g"`"
@@ -24,11 +24,11 @@ _msg() {
 }
 
 msg() {
-    _msg $C_PKGMSG "$@"
+    cmsg $C_PKGMSG "$@"
 }
 
 err() {
-    _msg $C_ERRMSG "$@"
+    cmsg $C_ERRMSG "$@"
 }
 
 
@@ -165,11 +165,11 @@ for pkg in $pkgs; do
         APPLY_RESULT=$?
 
         if [ $APPLY_RESULT -ne 0 ]; then
-            echo "NOTE: Dropping into a embedded shell. Use \`resolved\` or \`abort\` to return."
-            echo "NOTE: You can use \`edit\` to edit files in vim. It will automatically show any rejected hunks in an additional buffer."
-            echo "NOTE: The edited file will be added to the git index after vim is closed. \`e\` is short for 'edit PKGBUILD'."
-            echo "NOTE: Use \`sum\` to update the checksums. \`fin\` can be used to stage all modifications and commit."
-            echo "NOTE: At this time, the prompt doesn't support history or completion :'("
+            cmsg 34 "NOTE: Dropping into a embedded shell. Use \`resolved\` or \`abort\` to return."
+            cmsg 34 "NOTE: You can use \`edit\` to edit files in vim. It will automatically show any rejected hunks in an additional buffer."
+            cmsg 34 "NOTE: The edited file will be added to the git index after vim is closed. \`e\` is short for 'edit PKGBUILD'."
+            cmsg 34 "NOTE: Use \`sum\` to update the checksums. \`fin\` can be used to stage all modifications and commit. \`sf\` combines both."
+            cmsg 34 "NOTE: \`st\` is short for git status. At this time, the prompt doesn't support history or completion :'("
         fi
 
         while [ $APPLY_RESULT -ne 0 ]; do
@@ -205,8 +205,16 @@ for pkg in $pkgs; do
                     git add -u
                     resolved
                 }
+                st() {
+                    git status
+                }
+                sf() {
+                    sum
+                    fin
+                }
                 while true; do
-                    read -p "(AM) $PWD$ " _cmd
+                    echo -en "\033[${C_PROMPT}m(AM) $PWD$ \033[0m"
+                    read _cmd
                     eval "$_cmd"
                 done
             )

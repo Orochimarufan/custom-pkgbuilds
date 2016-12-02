@@ -175,6 +175,7 @@ for pkg in $pkgs; do
         while [ $APPLY_RESULT -ne 0 ]; do
             (
                 cd "$pkg"
+                git status --short
                 resolved() {
                     exit 2
                 }

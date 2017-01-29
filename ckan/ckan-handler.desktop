@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=CKAN
+Description=The Comprehensive Kerbal Archive Network
+Icon=ckan
+Categories=Utility
+Exec=/usr/bin/ckan gui %u
+MimeType=x-scheme-handler/ckan
+StartupNotify=true
+

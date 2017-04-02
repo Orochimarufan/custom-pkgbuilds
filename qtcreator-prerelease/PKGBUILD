@@ -6,9 +6,9 @@
 # Uncomment for a debug build
 #_qmake_args="CONFIG+=debug"
 pkgname=qtcreator-prerelease
-_pkgvermajmin=4.2
-pkgver=${_pkgvermajmin}.1
-_verpostfix=""
+_pkgvermajmin=4.3
+pkgver=${_pkgvermajmin}.0
+_verpostfix="-beta1"
 pkgrel=1
 _pkgver=${pkgver}${_verpostfix}
 _filename=qt-creator-opensource-src-${_pkgver}
@@ -22,8 +22,8 @@ provides=('qtcreator')
 conflicts=('qtcreator')
 depends=('qt5-base')
 makedepends=('clang' 'qt5-base')
-source=("${_relurlbase}/qtcreator/${_pkgvermajmin}/${_pkgver}/${_filename}.tar.xz")
-sha256sums=('3746d2232fff429da21079abdb68547d0a80bfcee794700c107eec872dae17c0')
+source=("${_devurlbase}/qtcreator/${_pkgvermajmin}/${_pkgver}/${_filename}.tar.xz")
+sha256sums=('9f5e28747281a2e75e5f875d37fad9422ee264357b2e752c450dad5b568229e2')
 
 build() {
   cd "$srcdir/${_filename}"

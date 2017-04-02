@@ -1,7 +1,7 @@
 # Maintainer: Taeyeon Mori <orochimarufan.x3@gmail.com>
 pkgname=qt5-python3-git
-_pkgver=2.3.0
-pkgver=2.3.0+b449eae
+_pkgver=3.1.0
+pkgver=$_pkgver+GIT
 pkgrel=1
 
 pkgdesc="PythonQt fork featuring Qt 5.x and Python 3.x support"

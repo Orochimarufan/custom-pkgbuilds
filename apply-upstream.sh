@@ -1,18 +1,24 @@
 #!/bin/bash
 # Imports and applies commits from upstream aports on modified packages (ABS/AUR version)
 # Note: needs asp (http://github.com/falconindy/asp) and my .files (http://github.com/Orochimarufan/.files)
-# (c) 2015 Taeyeon Mori
+# (c) 2015-2017 Taeyeon Mori
 
+# AUR configuration from .files
 . "${DOTFILES-$HOME/.files}/etc/aur.conf"
 
-WORKING_DIR=${TMPDIR-/tmp}/pkg-apply-upstream
-
-# Colory
+# Colors
 C_PKGNAM=36
 C_PKGMSG=33
 C_ERRMSG=31
 C_PROMPT=33
 
+# Working Directory
+WORKING_DIR=${TMPDIR-/tmp}/pkg-apply-upstream
+
+
+# Helper functions
+# =========================================================
+# Message formatting
 FMT_PKGNAME="\033[${C_PKGNAM}m%s\033[-MSGCOLOR-m"
 
 cmsg() {
@@ -31,28 +37,9 @@ err() {
     cmsg $C_ERRMSG "$@"
 }
 
-
-
-if [ -e "$WORKING_DIR" ]; then
-    echo "Somebody is already running this script which should not be used concurrently."
-    echo "If that is not the case, delete $WORKING_DIR and re-run it."
-    exit 1
-else
-    mkdir "$WORKING_DIR"
-fi
-
-
-kbd_int() {
-    err "Keyboard Interrupt"
-    [ -n "`ls "$WORKING_DIR"`" ] && git am --abort # assume git am was in progress
-    rm -r "$WORKING_DIR"
-    exit 255
-}
-
-trap kbd_int SIGINT
-
-
+# Run something in subdir
 run_in() {
+    # run_in DIR CMD...
     local _OLDPWD
     local _RT
     _OLDPWD="$OLDPWD"
@@ -65,6 +52,7 @@ run_in() {
     return $_RT
 }
 
+# Ask a yes/no question
 yesno() {
     while true; do
         printf "\033[${C_PROMPT}m%s (y/n)\033[0m " "$1"
@@ -76,14 +64,91 @@ yesno() {
     done
 }
 
-if [ -z "$1" ]; then
-    pkgs="`find . -mindepth 1 -maxdepth 1 -type d -not -name '.*'`"
+
+# Parse commandline
+# =========================================================
+pkgs=()
+exclude=()
+
+_arg_value=
+process_arg() {
+    if [ -n "$_arg_value" ]; then
+        case "$_arg_value" in
+            -e|--exclude)
+                exclude+=("`echo "$1" | tr , ' '`");;
+        esac
+        _arg_value=
+    else
+        case "$1" in
+            --help)
+                echo "PKGBUILD upstream synchronizer"
+                echo "    (c) 2015-2017 Taeyeon Mori"
+                echo
+                echo "Usage: $0 --help"
+                echo "       $0 [package-names ...]"
+                echo "       $0 --exclude [package-names,...]"
+                exit 0;;
+            -e|--exclude)
+                _arg_value=$1;;
+            *)
+                pkgs+=("$1");;
+        esac
+    fi
+}
+
+for cx in "$@"; do
+  case "$cx" in
+    --*)
+      process_arg "$cx";;
+    -*)
+      for c in `echo "${cx:1}" | grep -o .`; do
+        process_arg "-$c"
+      done;;
+    *)
+      process_arg "$cx";;
+  esac
+done
+
+
+# Working Directory
+# =========================================================
+if [ -e "$WORKING_DIR" ]; then
+    err "Somebody is already running this script which should not be used concurrently."
+    err "If that is not the case, delete $WORKING_DIR and re-run it."
+    exit 1
 else
-    pkgs="$1"
+    mkdir "$WORKING_DIR"
 fi
 
+# Proper cleanup
+kbd_int() {
+    err "Keyboard Interrupt"
+    [ -n "`ls "$WORKING_DIR"`" ] && git am --abort # assume git am was in progress
+    rm -r "$WORKING_DIR"
+    exit 255
+}
+
+trap kbd_int SIGINT
+
+
+# Find Packages
+# =========================================================
+if [ -z "$pkgs" ]; then
+    pkgs=("`find . -mindepth 2 -maxdepth 2 -type f -name UPSTREAM -printf '%h\n'`")
+fi
+
+
+# Process Packages
+# =========================================================
 for pkg in $pkgs; do
     pkg="`basename "$pkg"`"
+
+    for excl in "${exclude[@]}"; do
+        if [ "$pkg" = "$excl" ]; then
+            warn "Skipping $pkg (Excluded on commandline)"
+            continue
+        fi
+    done
 
     if ! [ -e "$pkg/PKGBUILD" ]; then
         err "Not an Arch Package: '$FMT_PKGNAME'" $pkg
@@ -92,7 +157,7 @@ for pkg in $pkgs; do
 
     upstream_type=""
     upstream_name=""
-    
+
     if [ -e "$pkg/UPSTREAM" ]; then
         if grep -q : "$pkg/UPSTREAM"; then
             upstream_type="`cut -d: -f1 $pkg/UPSTREAM`"
@@ -117,12 +182,12 @@ for pkg in $pkgs; do
             upstream_type=AUR
         fi
     fi
-    
+
     if ! git ls-files --error-unmatch "$pkg" >/dev/null 2>&1; then
         err "Package '$FMT_PKGNAME' is not being tracked!" $pkg
         continue
     fi
-    
+
     if echo "$upstream_type" | grep -qi "ABS"; then
         upstream_type=ABS
         upstream_dir="$ABSDEST/$upstream_name"
@@ -233,7 +298,7 @@ for pkg in $pkgs; do
                 echo "WARNING: Exit the (AM) prompt with either \`resolved\` or \`abort\`"
             fi
         done
-        
+
         if [ $APPLY_RESULT -eq 0 ]; then
             printf "%s:%s:" $upstream_type $upstream_name >"$pkg/UPSTREAM"
             run_in "$upstream_dir" git rev-parse --verify HEAD >>"$pkg/UPSTREAM"

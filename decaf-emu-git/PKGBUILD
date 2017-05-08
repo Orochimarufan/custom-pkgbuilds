@@ -1,10 +1,11 @@
+# Maintainer: Taeyeon Mori <orochimarufan.x3@gmail.com>
 # Maintainer: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>
 # Contributor: aldelaro5 <aldelaro5@gmail.com>
 
 _pkgbase='decaf-emu'
 pkgname="$_pkgbase-git"
-pkgver=r2856.ce00304
-pkgrel=1
+pkgver=r3248.0986d10c
+pkgrel=2
 pkgdesc="An experimental open-source Nintendo Wii U emulator"
 arch=('x86_64')
 url="https://github.com/decaf-emu/decaf-emu"
@@ -86,4 +87,11 @@ build() {
 package() {
   cd "$srcdir/$_pkgbase/build"
   make DESTDIR="$pkgdir/" install
+
+  install -d -m 755 "$pkgdir/usr/bin"
+  ln -s /opt/decaf-emu/decaf-sdl "$pkgdir/usr/bin"
+  ln -s /opt/decaf-emu/decaf-cli "$pkgdir/usr/bin"
+  ln -s /opt/decaf-emu/pm4-replay "$pkgdir/usr/bin"
+  ln -s /opt/decaf-emu/gfd-tool "$pkgdir/usr/bin"
 }
+

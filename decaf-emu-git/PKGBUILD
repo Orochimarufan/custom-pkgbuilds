@@ -12,8 +12,8 @@ license=('GPL')
 depends=('zlib' 'sdl2')
 makedepends=('git' 'cmake')
 source=("$_pkgbase::git+https://github.com/decaf-emu/decaf-emu"
+        'git+https://github.com/decaf-emu/libbinrec'
         'git+https://github.com/zeux/pugixml'
-        'git+https://github.com/kobalicek/asmjit'
         'git+https://github.com/gabime/spdlog'
         'git+https://github.com/USCiLab/cereal'
         'git+https://github.com/exjam/ovsocket'
@@ -22,8 +22,10 @@ source=("$_pkgbase::git+https://github.com/decaf-emu/decaf-emu"
         'git+https://github.com/decaf-emu/addrlib'
         'git+https://github.com/exjam/excmd'
         'git+https://github.com/johnmcfarlane/fixed_point'
-        'git+https://github.com/ocornut/imgui')
+        'git+https://github.com/ocornut/imgui'
+        'git+https://github.com/skystrife/cpptoml')
 md5sums=('SKIP'
+         'SKIP'
          'SKIP'
          'SKIP'
          'SKIP'
@@ -46,8 +48,8 @@ prepare() {
   mkdir -p build
 
   git submodule init
+  git config submodule.libraries/libbinrec.url "$srcdir/libbinrec"
   git config submodule.libraries/pugixml.url "$srcdir/pugixml"
-  git config submodule.libraries/asmjit.url "$srcdir/asmjit"
   git config submodule.libraries/spdlog.url "$srcdir/spdlog"
   git config submodule.libraries/cereal.url "$srcdir/cereal"
   git config submodule.libraries/ovsocket.url "$srcdir/ovsocket"
@@ -57,13 +59,14 @@ prepare() {
   git config submodule.libraries/excmd.url "$srcdir/excmd"
   git config submodule.libraries/fixed_point.url "$srcdir/fixed_point"
   git config submodule.libraries/imgui.url "$srcdir/imgui"
+  git config submodule.libraries/cpptoml.url "$srcdir/cpptoml"
 }
 
 build() {
   cd "$srcdir/$_pkgbase"
   git submodule update \
+    libraries/libbinrec \
     libraries/pugixml \
-    libraries/asmjit \
     libraries/spdlog \
     libraries/cereal \
     libraries/ovsocket \
@@ -72,10 +75,11 @@ build() {
     libraries/addrlib \
     libraries/excmd \
     libraries/fixed_point \
-    libraries/imgui
+    libraries/imgui \
+    libraries/cpptoml
 
   cd build
-  cmake .. -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release
+  cmake .. -DCMAKE_INSTALL_PREFIX=/opt/decaf-emu -DCMAKE_BUILD_TYPE=Release
   make
 }
 

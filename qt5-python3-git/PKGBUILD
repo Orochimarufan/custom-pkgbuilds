@@ -35,6 +35,7 @@ build() {
 
 check() {
     cd "$srcdir/build"
+    ninja tests
 }
 
 package() {

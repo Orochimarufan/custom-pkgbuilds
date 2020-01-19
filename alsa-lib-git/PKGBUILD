@@ -1,0 +1,37 @@
+# Contributor: judd <jvinet@zeroflux.org>
+
+pkgname=alsa-lib-git
+pkgver=1.2.1.2
+pkgrel=1
+pkgdesc="An alternative implementation of Linux sound support"
+arch=('x86_64')
+url="https://www.alsa-project.org"
+depends=('glibc' 'alsa-topology-conf' 'alsa-ucm-conf')
+makedepends=(git)
+conflicts=(alsa-lib)
+provides=(alsa-lib=$pkgver)
+license=('LGPL')
+source=(git+https://git.alsa-project.org/http/alsa-lib.git)
+sha512sums=(SKIP)
+
+pkgver() {
+  cd "$srcdir/alsa-lib"
+  git describe --long | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g'
+}
+
+build() {
+  cd "$srcdir/alsa-lib"
+  # See git/INSTALL
+  libtoolize --force --copy --automake
+  aclocal
+  autoheader
+  automake --foreign --copy --add-missing
+  autoconf
+  ./configure --without-debug --prefix=/usr
+  make
+}
+
+package() {
+  cd "$srcdir/alsa-lib"
+  make DESTDIR="$pkgdir" install
+}

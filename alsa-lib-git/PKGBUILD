@@ -2,14 +2,17 @@
 
 pkgname=alsa-lib-git
 pkgver=1.2.1.2
-pkgrel=1
+pkgrel=2
+sover=2-64
 pkgdesc="An alternative implementation of Linux sound support"
 arch=('x86_64')
 url="https://www.alsa-project.org"
 depends=('glibc' 'alsa-topology-conf' 'alsa-ucm-conf')
 makedepends=(git)
 conflicts=(alsa-lib)
-provides=(alsa-lib=$pkgver)
+provides=(alsa-lib=$pkgver
+          libasound.so=$sover
+          libatopology.so=$sover)
 license=('LGPL')
 source=(git+https://git.alsa-project.org/http/alsa-lib.git)
 sha512sums=(SKIP)
